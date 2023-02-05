@@ -31,7 +31,7 @@ def part_1(data):
 
 def part_2(data):
     rules = parse_input(data)
-    return count_bags(SHINY_GOLD, rules) - 1
+    return count_bags(SHINY_GOLD, rules, {})
 
 
 def parse_input(data):
@@ -64,14 +64,18 @@ def contains_shiny(bag, rules):
     return any(contains_shiny(bag, rules) for bag in bags_inside.keys())
 
 
-def count_bags(bag, rules):
+def count_bags(bag, rules, cache):
+    if bag in cache:
+        return cache[bag]
+
     bags_inside = rules[bag]
 
-    result = 1
+    result = 0
 
-    for bag, count in bags_inside.items():
-        result += count_bags(bag, rules) * count
+    for inner_bag, count in bags_inside.items():
+        result += (count_bags(inner_bag, rules, cache) + 1) * count
 
+    cache[bag] = result
     return result
 
 
