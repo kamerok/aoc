@@ -7,25 +7,24 @@ def check(value, expected):
     assert value == expected, f'Expected {expected} but was {value}'
 
 
-def read_input(year, day):
-    return read_file_lines(get_file_path(year, day, ''))
+def read_input(year, day, suffix=''):
+    return read_file_lines(get_file_path(year, day, suffix))
 
 
-def read_input_raw(year, day):
-    with open(get_file_path(year, day, '')) as file:
+def read_input_raw(year, day, suffix=''):
+    with open(get_file_path(year, day, suffix)) as file:
         return file.read()
 
 
 def read_test_input(year, day):
-    return read_file_lines(get_file_path(year, day, '_test'))
+    return read_input(year, day, '_test')
 
 
 def read_test_input_raw(year, day):
-    with open(get_file_path(year, day, '_test')) as file:
-        return file.read()
+    return read_input_raw(year, day, '_test')
 
 
-def get_file_path(year, day, suffix):
+def get_file_path(year, day, suffix=''):
     file_name = f'day{day:02d}{suffix}.txt'
     # notebook working directory support
     if os.getcwd().endswith('solutions'):
