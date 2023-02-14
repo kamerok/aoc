@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from collections import deque
+from functools import lru_cache
 
 from utils.utils import check, read_test_input, read_input
 
@@ -40,26 +41,20 @@ def part_2(data):
     data.insert(0, 0)
     data.append(data[-1] + 3)
 
-    return count_options(0, data, {})
+    @lru_cache
+    def count_options(index):
+        if index == len(data) - 1:
+            return 1
 
+        options = 0
 
-def count_options(index, data, cache):
-    if index in cache:
-        return cache[index]
+        for possible_next in range(index + 1, min(index + 4, len(data))):
+            if data[possible_next] - data[index] <= 3:
+                options += count_options(possible_next)
 
-    n = len(data)
-    if index == n - 1:
-        return 1
+        return options
 
-    options = 0
-
-    possible_routes = (index + 1, index + 2, index + 3)
-    for possible_next in possible_routes:
-        if possible_next < n and data[possible_next] - data[index] <= 3:
-            options += count_options(possible_next, data, cache)
-
-    cache[index] = options
-    return options
+    return count_options(0)
 
 
 if __name__ == '__main__':
