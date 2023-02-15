@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-from collections import deque
 from functools import lru_cache
 
-from utils.utils import check, read_test_input, read_input
+from utils.utils import check, read_input
 
 
 def main():
