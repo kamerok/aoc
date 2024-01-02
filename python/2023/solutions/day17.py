@@ -57,7 +57,8 @@ def solve(field, min_steps, max_steps):
     end = (len(field) - 1, len(field[0]) - 1)
 
     def check_end(node):
-        return node[0] == end
+        point, _, steps = node
+        return point == end and steps >= min_steps
 
     def heuristic(node):
         (row, col), _, _ = node
@@ -90,8 +91,6 @@ def solve(field, min_steps, max_steps):
             if candidate_steps > max_steps:
                 continue
             if direction != candidate_direction and steps < min_steps:
-                continue
-            if candidate_point == end and candidate_steps < min_steps:
                 continue
             result.append((candidate_point, candidate_direction.value, candidate_steps))
         return result
