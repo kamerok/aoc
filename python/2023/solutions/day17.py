@@ -90,7 +90,7 @@ def solve(field, min_steps, max_steps):
                 continue
             if candidate_steps > max_steps:
                 continue
-            if direction != candidate_direction and steps < min_steps:
+            if node != start and direction != candidate_direction and steps < min_steps:
                 continue
             result.append((candidate_point, candidate_direction.value, candidate_steps))
         return result
