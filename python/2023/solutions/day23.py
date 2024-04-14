@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from utils.utils import read_input, check, read_test_input, dijkstra
+from utils.utils import read_input, check, read_test_input
 
 
 def print_field(field):
@@ -17,25 +17,25 @@ def build_graph(data):
         return next((point for point in neighbours if is_next(point)), None)
 
     def is_next(point):
-        return 0 <= point[0] < len(field) and 0 <= point[1] <= len(field[0]) and field[point[0]][point[1]] == '.'
+        return field[point[0]][point[1]] == '.'
 
     def get_edges(point):
         row, col = point
         result = []
-        if 0 <= row + 1 < len(field) and field[row + 1][col] == 'v':
+        if field[row + 1][col] == 'v':
             result.append((row + 2, col))
-        if 0 <= row - 1 < len(field) and field[row - 1][col] == '^':
+        if field[row - 1][col] == '^':
             result.append((row - 2, col))
-        if 0 <= col + 1 <= len(field[0]) and field[row][col + 1] == '>':
+        if field[row][col + 1] == '>':
             result.append((row, col + 2))
-        if 0 <= col - 1 <= len(field[0]) and field[row][col - 1] == '<':
+        if field[row][col - 1] == '<':
             result.append((row, col - 2))
         return result
 
-    to_process = [(0, 1)]
+    to_process = [(1, 1)]
     while to_process:
-        node = to_process.pop()
-        current = node
+        start = to_process.pop()
+        current = start
         weight = 0
         field[current[0]][current[1]] = '#'
 
@@ -45,10 +45,10 @@ def build_graph(data):
             field[current[0]][current[1]] = '#'
 
         local_edges = get_edges(current)
-        edges[node] = local_edges
+        edges[start] = local_edges
         if local_edges:
             weight = weight + 2
-        weights[node] = weight
+        weights[start] = weight
         to_process.extend([point for point in local_edges if point not in weights])
     return weights, edges
 
@@ -58,15 +58,14 @@ def part_1(data):
     end = next(point for point in weights.keys() if len(edges[point]) == 0)
 
     def max_path(point):
-        if point == end:
-            return weights[end]
-
         next_nodes = edges[point]
+        if len(next_nodes) == 0:
+            return weights[end]
         next_length = max(map(max_path, next_nodes))
 
         return weights[point] + next_length
 
-    return max_path((0, 1))
+    return max_path((1, 1)) + 2
 
 
 def part_2(data):
@@ -78,7 +77,7 @@ sample_data = read_test_input(2023, 23)
 data = read_input(2023, 23)
 
 check(part_1(sample_data), 94)
-print(part_1(data))
+check(part_1(data), 2318)
 
 check(part_2(sample_data), 154)
 print(part_2(data))
