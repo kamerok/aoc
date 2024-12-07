@@ -2,22 +2,20 @@
 from utils.utils import read_input, read_test_input, check
 
 
-def part_1(data):
-    return compute_answer(data)
-
-
 def compute_answer(data, include_concat=False):
     answer = 0
     for line in data:
         raw_sum, raw_numbers = line.split(':')
         total = int(raw_sum)
-        values = list(map(int, raw_numbers.split()))
+        values = tuple(map(int, raw_numbers.split()))
         if check_possibility(total, values, 0, values[0], include_concat):
             answer = answer + total
     return answer
 
 
 def check_possibility(total, values, index, subtotal, include_concat=False):
+    if subtotal > total:
+        return False
     if index == len(values) - 1:
         if total == subtotal:
             return True
@@ -28,6 +26,10 @@ def check_possibility(total, values, index, subtotal, include_concat=False):
     if include_concat:
         to_check.append(int(f"{subtotal}{next_value}"))
     return any([check_possibility(total, values, index + 1, subtotal, include_concat) for subtotal in to_check])
+
+
+def part_1(data):
+    return compute_answer(data)
 
 
 def part_2(data):
