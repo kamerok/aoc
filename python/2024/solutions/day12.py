@@ -52,30 +52,31 @@ def part_2(data):
 
                 straight_borders = 0
                 in_border = False
-                for horizontal_index in range(len(data) + 1):
-                    for vertical_index in range(len(data[0])):
-                        potential_border = (False, horizontal_index, vertical_index)
-                        if potential_border in borders:
-                            if not in_border:
-                                straight_borders = straight_borders + 1
-                                in_border = True
-                            if (((True, horizontal_index - 1, vertical_index + 1) in borders and
-                                 (True, horizontal_index, vertical_index + 1) in borders) or
-                                    (False, horizontal_index, vertical_index + 1) not in borders):
-                                in_border = False
+                sorted_horizontal_borders = sorted([border for border in borders if not border[0]])
+                for potential_border in sorted_horizontal_borders:
+                    _, horizontal_index, vertical_index = potential_border
+                    if not in_border:
+                        straight_borders = straight_borders + 1
+                        in_border = True
+                    if (((True, horizontal_index - 1, vertical_index + 1) in borders and
+                         (True, horizontal_index, vertical_index + 1) in borders) or
+                            (False, horizontal_index, vertical_index + 1) not in borders):
+                        in_border = False
 
                 in_border = False
-                for vertical_index in range(len(data[0]) + 1):
-                    for horizontal_index in range(len(data)):
-                        potential_border = (True, horizontal_index, vertical_index)
-                        if potential_border in borders:
-                            if not in_border:
-                                straight_borders = straight_borders + 1
-                                in_border = True
-                            if (((False, horizontal_index + 1, vertical_index - 1) in borders and
-                                 (False, horizontal_index + 1, vertical_index) in borders) or
-                                    (True, horizontal_index + 1, vertical_index) not in borders):
-                                in_border = False
+                sorted_horizontal_borders = sorted(
+                    [border for border in borders if border[0]],
+                    key=lambda b: (b[2], b[1])
+                )
+                for potential_border in sorted_horizontal_borders:
+                    _, horizontal_index, vertical_index = potential_border
+                    if not in_border:
+                        straight_borders = straight_borders + 1
+                        in_border = True
+                    if (((False, horizontal_index + 1, vertical_index - 1) in borders and
+                         (False, horizontal_index + 1, vertical_index) in borders) or
+                            (True, horizontal_index + 1, vertical_index) not in borders):
+                        in_border = False
 
                 answer = answer + len(region) * straight_borders
     return answer
