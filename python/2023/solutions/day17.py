@@ -64,8 +64,8 @@ def solve(field, min_steps, max_steps):
         (row, col), _, _ = node
         return (end[0] - row) + (end[1] - col)
 
-    def distance(node):
-        (row, col), _, _ = node
+    def distance(_, next_node):
+        (row, col), _, _ = next_node
         return field[row][col]
 
     def neighbours(node):

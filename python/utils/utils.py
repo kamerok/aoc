@@ -88,12 +88,15 @@ def a_star(start, check_end, distance, find_neighbours, heuristic):
 
         if check_end(current):
             path = restore_path(current, previous_node)
-            return sum(map(distance, path))
+            length = distance(start, path[0])
+            for i in range(len(path) - 1):
+                length = length + distance(path[i], path[i + 1])
+            return length
 
         neighbours = find_neighbours(current)
 
         for neighbour in neighbours:
-            tentative_g_score = g_score[current] + distance(neighbour)
+            tentative_g_score = g_score[current] + distance(current, neighbour)
 
             if tentative_g_score < g_score.get(neighbour, sys.maxsize):
                 previous_node[neighbour] = current
