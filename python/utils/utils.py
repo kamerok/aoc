@@ -77,6 +77,17 @@ def dijkstra(start, check_end, distance, find_neighbours):
 
 
 def a_star(start, check_end, distance, find_neighbours, heuristic):
+    path = a_star_path(start, check_end, distance, find_neighbours, heuristic)
+    if path is None:
+        return None
+
+    length = distance(start, path[0])
+    for i in range(len(path) - 1):
+        length = length + distance(path[i], path[i + 1])
+    return length
+
+
+def a_star_path(start, check_end, distance, find_neighbours, heuristic):
     queue = [(0, start)]
     previous_node = {}
 
@@ -88,10 +99,7 @@ def a_star(start, check_end, distance, find_neighbours, heuristic):
 
         if check_end(current):
             path = restore_path(current, previous_node)
-            length = distance(start, path[0])
-            for i in range(len(path) - 1):
-                length = length + distance(path[i], path[i + 1])
-            return length
+            return path
 
         neighbours = find_neighbours(current)
 
@@ -105,4 +113,4 @@ def a_star(start, check_end, distance, find_neighbours, heuristic):
                 f_score[neighbour] = neighbour_f_score
                 heapq.heappush(queue, (neighbour_f_score, neighbour))
 
-    return -1
+    return None
