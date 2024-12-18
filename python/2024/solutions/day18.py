@@ -27,11 +27,18 @@ def part_1(data, size):
 
 def part_2(data, size):
     original_walls = [(int(x), int(y)) for x, y in map(lambda line: line.split(','), data)]
-    walls = set()
-    point = (0, 0)
-    while find_path(size, walls):
-        point = original_walls.pop(0)
-        walls.add(point)
+    min_walls = 0
+    max_walls = len(original_walls)
+    while min_walls != max_walls:
+        mid_walls = min_walls + int((max_walls - min_walls) / 2)
+        if mid_walls == min_walls:
+            break
+        path = find_path(size, set(original_walls[:mid_walls]))
+        if path is None:
+            max_walls = mid_walls
+        else:
+            min_walls = mid_walls
+    point = original_walls[min_walls]
     return f'{point[0]},{point[1]}'
 
 
