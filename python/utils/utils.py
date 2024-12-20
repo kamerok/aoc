@@ -77,6 +77,15 @@ def dijkstra(start, check_end, distance, find_neighbours):
 
 
 def a_star(start, check_end, distance, find_neighbours, heuristic):
+    """
+
+    :param start:
+    :param check_end:
+    :param distance:
+    :param find_neighbours:
+    :param heuristic: estimation of the cost to reach the end
+    :return:
+    """
     path = a_star_path(start, check_end, distance, find_neighbours, heuristic)
     if path is None:
         return None
@@ -88,6 +97,15 @@ def a_star(start, check_end, distance, find_neighbours, heuristic):
 
 
 def a_star_path(start, check_end, distance, find_neighbours, heuristic):
+    """
+
+    :param start:
+    :param check_end:
+    :param distance:
+    :param find_neighbours:
+    :param heuristic: estimation of the cost to reach the end
+    :return:
+    """
     queue = [(0, start)]
     previous_node = {}
 
