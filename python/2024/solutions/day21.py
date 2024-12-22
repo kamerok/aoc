@@ -83,9 +83,9 @@ def find_move_options(current_symbol, next_symbol, positions):
 
 def process_sequence(sequence, depth, target_depth, cache):
     if depth > target_depth:
-        return sequence
+        return len(sequence)
 
-    result_sequence = ''
+    result_sequence = 0
     for i, current_symbol in enumerate(f'A{sequence}'[: -1]):
         next_symbol = sequence[i]
         cache_key = (current_symbol, next_symbol, depth)
@@ -94,12 +94,7 @@ def process_sequence(sequence, depth, target_depth, cache):
             positions = keypad_positions if depth == 0 else directional_positions
             move_options = find_move_options(current_symbol, next_symbol, positions)
 
-            shortest_sequence = None
-            for option in move_options:
-                new_sequence = process_sequence(option, depth + 1, target_depth, cache)
-                if shortest_sequence is None or len(shortest_sequence) > len(new_sequence):
-                    shortest_sequence = new_sequence
-            cache[cache_key] = shortest_sequence
+            cache[cache_key] = min(process_sequence(option, depth + 1, target_depth, cache) for option in move_options)
 
         result_sequence = result_sequence + cache[cache_key]
     return result_sequence
@@ -111,7 +106,7 @@ def part_1(data):
     answer = 0
     for code in data:
         sequence = process_sequence(code, 0, 2, cache)
-        answer = answer + int(code[:-1]) * len(sequence)
+        answer = answer + int(code[:-1]) * sequence
     return answer
 
 
@@ -121,7 +116,7 @@ def part_2(data):
     answer = 0
     for code in data:
         sequence = process_sequence(code, 0, 25, cache)
-        answer = answer + int(code[:-1]) * len(sequence)
+        answer = answer + int(code[:-1]) * sequence
     return answer
 
 
