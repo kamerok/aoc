@@ -27,8 +27,8 @@ def part_1(data):
     return sum(evolve_multiple(n, 2000) for n in map(int, data))
 
 
-def generate_all_sequences(seed):
-    result = {}
+def generate_all_sequences(seed, all_sequences):
+    keys = set()
     current_price = seed % 10
     window = []
     for _ in range(2000):
@@ -40,27 +40,16 @@ def generate_all_sequences(seed):
             window.pop(0)
         if len(window) == 4:
             key = tuple(window)
-            if key not in result:
-                result[key] = current_price
-
-    return result
+            if key not in keys:
+                keys.add(key)
+                all_sequences[key] = all_sequences.get(key, 0) + current_price
 
 
 def part_2(data):
-    sellers_sequences = [generate_all_sequences(seed) for seed in map(int, data)]
-    max_sell = 0
-    checked = set()
-    for i, seller_sequences in enumerate(sellers_sequences):
-        for sequence in seller_sequences.keys():
-            if sequence in checked:
-                continue
-            else:
-                checked.add(sequence)
-            sell = seller_sequences[sequence]
-            for next_seller in sellers_sequences[i + 1:]:
-                sell = sell + next_seller.get(sequence, 0)
-            max_sell = max(sell, max_sell)
-    return max_sell
+    sequences = {}
+    for seed in map(int, data):
+        generate_all_sequences(seed, sequences)
+    return max(sequences.values())
 
 
 sample_data = read_test_input(2024, 22)
