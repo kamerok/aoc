@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 from itertools import combinations
 
+from z3 import Int, Solver
+
 from utils.utils import read_input, check, read_test_input
 
 
@@ -51,7 +53,36 @@ def part_1(data, area_min, area_max):
 
 
 def part_2(data):
-    return 0
+    hails = tuple(
+        (
+            tuple(map(int, raw_point.split(', '))),
+            tuple(map(int, raw_delta.split(', ')))
+        )
+        for raw_point, raw_delta
+        in map(lambda line: line.split(' @ '), data)
+    )
+
+    def plus(v1, v2):
+        return [v1[0] + v2[0], v1[1] + v2[1], v1[2] + v2[2]]
+
+    ax = Int('ax')
+    ay = Int('ay')
+    az = Int('az')
+    bx = Int('bx')
+    by = Int('by')
+    bz = Int('bz')
+
+    solver = Solver()
+    for i, (h_s, h_d) in enumerate(hails):
+        s = Int(f's{i}')
+        c = h_s
+        d = plus(h_s, h_d)
+        solver.add(ax + s * (bx - ax) == c[0] + s * (d[0] - c[0]))
+        solver.add(ay + s * (by - ay) == c[1] + s * (d[1] - c[1]))
+        solver.add(az + s * (bz - az) == c[2] + s * (d[2] - c[2]))
+    solver.check()
+    model = solver.model()
+    return model.eval(ax).as_long() + model.eval(ay).as_long() + model.eval(az).as_long()
 
 
 sample_data = read_test_input(2023, 24)
