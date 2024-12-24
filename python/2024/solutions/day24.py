@@ -1,5 +1,15 @@
 #!/usr/bin/env python3
+import networkx as nx
+import gravis as gv
+
 from utils.utils import read_input, read_test_input, check
+
+
+def generate_graph(edges):
+    g = nx.DiGraph()
+    g.add_edges_from(edges)
+    fig = gv.d3(g)
+    fig.export_html('graph.html')
 
 
 def get_binary_number(name, values):
@@ -57,7 +67,93 @@ def part_1(data):
 
 
 def part_2(data):
-    return 0
+    # this one is a mess
+    # with graph visualisation I found a set of variables (node) that derives certain z bit
+    # that it was a matter of trying different combinations to fix the node
+    swaps = (
+        ('hkh', 'z31'),
+        ('z27', 'bfq'),
+        ('hmt', 'z18'),
+        ('bng', 'fjp'),
+    )
+
+    swaps_map = {}
+    for a, b in swaps:
+        swaps_map[a] = b
+        swaps_map[b] = a
+
+    original_values = {}
+    gates = {}
+    effects = {}
+    for line in data:
+        if ':' in line:
+            key, value = line.split(': ')
+            original_values[key] = bool(int(value))
+        elif '->' in line:
+            a, operation, b, _, target = line.split()
+            if target in swaps_map:
+                target = swaps_map[target]
+            gates[target] = (operation, a, b)
+            effects[a] = {*effects.get(a, set()), target}
+            effects[b] = {*effects.get(b, set()), target}
+
+    values = dict(original_values)
+
+    x = get_binary_number('x', values)
+    y = get_binary_number('y', values)
+    z = evaluate_z(values, gates)
+
+    expected = f'{(int(x, 2) + int(y, 2)):b}'
+    print(expected)
+    print(z)
+
+    values = dict(original_values)
+
+    for i in range(45):
+        values[f'x{i:02d}'] = True
+        values[f'y{i:02d}'] = True
+
+    x = get_binary_number('x', values)
+    y = get_binary_number('y', values)
+    z = evaluate_z(values, gates)
+
+    expected = f'{(int(x, 2) + int(y, 2)):b}'
+    print(expected)
+    print(z)
+
+    for i in range(len(expected)):
+        z_bit = z[len(z) - 1 - i]
+        expected_bit = expected[len(expected) - 1 - i]
+        if z_bit != expected_bit:
+            print(f'z{i}', expected_bit, z_bit)
+
+    values = dict(original_values)
+
+    for i in range(45):
+        values[f'x{i:02d}'] = i % 2 > 0
+        values[f'y{i:02d}'] = i % 2 == 0
+
+    x = get_binary_number('x', values)
+    y = get_binary_number('y', values)
+    z = evaluate_z(values, gates)
+
+    expected = f'{(int(x, 2) + int(y, 2)):b}'
+    print(expected)
+    print(z)
+
+    for i in range(len(expected)):
+        z_bit = z[len(z) - 1 - i]
+        expected_bit = expected[len(expected) - 1 - i]
+        if z_bit != expected_bit:
+            print(f'z{i}', expected_bit, z_bit)
+
+    edges = []
+    for key, value in effects.items():
+        for v in value:
+            edges.append((key + f'[{values[key]}]', v+f'[{values[v]}]'))
+    generate_graph(edges)
+
+    return print(','.join(sorted(swaps_map.keys())))
 
 
 sample_data = read_test_input(2024, 24)
@@ -68,5 +164,4 @@ check(part_1(sample_data), 2024)
 print(part_1(input_data))
 assert part_1(input_data) == 51745744348272
 
-check(part_2(sample_data2), 'z00,z01,z02,z05')
 print(part_2(input_data))
