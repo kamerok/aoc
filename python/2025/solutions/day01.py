@@ -38,7 +38,6 @@ def part_2(data):
                 zeroes += 1
                 current %= 100
     return zeroes
-    pass
 
 
 sample_data = read_test_input(2025, 1)
