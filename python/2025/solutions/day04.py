@@ -3,12 +3,16 @@ from utils.utils import read_input, read_test_input, check
 
 
 def part_1(data):
-    answer = 0
+    return len(find_cells_to_remove(data))
+
+
+def find_cells_to_remove(data):
+    to_remove = []
     for row, line in enumerate(data):
         for col, cell in enumerate(line):
             if cell == '@' and len(get_neighbours(row, col, data)) < 4:
-                answer += 1
-    return answer
+                to_remove.append((row, col))
+    return to_remove
 
 
 def get_neighbours(row, col, data):
@@ -21,7 +25,13 @@ def get_neighbours(row, col, data):
 
 
 def part_2(data):
-    pass
+    data = [list(line) for line in data]
+    removed = 0
+    while len(to_remove := find_cells_to_remove(data)) > 0:
+        removed += len(to_remove)
+        for row, col in to_remove:
+            data[row][col] = 'x'
+    return removed
 
 
 sample_data = read_test_input(2025, 4)
