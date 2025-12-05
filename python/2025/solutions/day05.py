@@ -15,9 +15,28 @@ def parse_data(data):
 
 
 def part_2(data):
-    ids, ranges = parse_data(data)
+    _, ranges = parse_data(data)
+    borders_to_ranges = []
+    for r in set(ranges):
+        borders_to_ranges.append((r.start, r))
+        borders_to_ranges.append((r.stop, r))
+    borders_to_ranges.sort(key=lambda item: item[0])
 
-    return 0
+    result_ranges = []
+    current_start = None
+    open_ranges = set()
+    for border, r in borders_to_ranges:
+        if border == r.start:
+            if current_start is None:
+                current_start = border
+            open_ranges.add(r)
+        else:
+            open_ranges.remove(r)
+            if len(open_ranges) == 0:
+                result_ranges.append(range(current_start, border))
+                current_start = None
+
+    return sum(len(r) for r in result_ranges)
 
 
 sample_data = read_test_input(2025, 5)
