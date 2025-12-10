@@ -1,27 +1,26 @@
 #!/usr/bin/env python3
+from scipy.optimize import linprog
+
 from utils.utils import read_input, read_test_input, check
 
 
 def part_1(data):
     machines = parse_input(data)
-    answer = 0
-    for target, buttons, _ in machines:
-        answer += find_shortest_combo(target, buttons)
-    return answer
+    return sum(find_shortest_light(target, buttons) for target, buttons, _ in machines)
 
 
 def parse_input(data):
     machines = []
     for line in data:
         items = line.split(' ')
-        lights = [c == '#' for c in items[0][1:-1]]
+        lights = [1 if c == '#' else 0 for c in items[0][1:-1]]
         buttons = [set(map(int, button[1:-1].split(','))) for button in items[1:-1]]
-        joltage = set(map(int, items[-1][1:-1].split(',')))
+        joltage = list(map(int, items[-1][1:-1].split(',')))
         machines.append((lights, buttons, joltage))
     return machines
 
 
-def find_shortest_combo(target, buttons):
+def find_shortest_light(target, buttons):
     sequences = []
     for mask in range(2 ** len(buttons)):
         bits = [c == '1' for c in ("{:0" + f"{len(buttons)}" + "b}").format(mask)]
@@ -38,7 +37,18 @@ def find_shortest_combo(target, buttons):
 
 
 def part_2(data):
-    return 0
+    machines = parse_input(data)
+    return sum(find_shortest_joltage(target, buttons) for _, buttons, target in machines)
+
+
+def find_shortest_joltage(target, buttons):
+    A = [[1 if i in button else 0 for button in buttons] for i in range(len(target))]
+    b = target
+    solution = linprog(c=[1] * len(A[0]),
+                       A_eq=A,
+                       b_eq=b,
+                       integrality=[1] * len(A[0]))
+    return sum(solution['x'])
 
 
 sample_data = read_test_input(2025, 10)
